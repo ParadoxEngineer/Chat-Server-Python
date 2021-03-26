@@ -1,10 +1,6 @@
 # Chat-Server
 
-Teams: (For Luke's sake)
+The Team
 
 Python:
 Jonathan Edwards
-
-Java:
-
-C:
