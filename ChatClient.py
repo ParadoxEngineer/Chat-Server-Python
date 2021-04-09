@@ -1,8 +1,11 @@
 # Client
 import socket
 import struct
+import sys
 
 def main():
+	MAXLINE = 4096
+	
 	if len(sys.argv) < 2:
 		IP = input('Enter server IP: ')
 	else:
@@ -16,11 +19,16 @@ def main():
 	
 	# Join command
 	while True:
-		sock.send(struct.pack('!Bhs', 0, len(username), username))
+		packType = '!Bh' + str(len(username)) + 's'
+		sock.send(struct.pack(packType, 0, len(username), username.encode('ASCII')))
 		
-		data = struct.unpack('!B', sock.recv())
+		#sock.send(struct.pack('!Bh', 0, 7))
 		
-		if data[0] = 0:
+		print(struct.pack(packType, 0, len(username), username.encode('ASCII')))
+		
+		data = struct.unpack('!B', sock.recv(MAXLINE))
+		
+		if data[0] == 0:
 			break
 		
 		username = input('Username rejected, enter a new username: ')
