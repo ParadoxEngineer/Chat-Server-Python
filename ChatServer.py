@@ -3,21 +3,35 @@ import socket
 import threading
 import struct
 
+usernames = []
+
+#Leftover for threading
 #def clientHandler():
-#	
+
+#Sends given message to all users (for Join/Leave notices and Talk)
+def sendMessage(message):
+	messageLen = len(message)
+	packString = '!Bh' + str(messageLen) + 's'
+	
+	for e in usernames:
+		#This syntax may be off, needs testing
+		usernames[e][2].send(struct.pack(packString, 2, messageLen, message))
 
 def main():
 	MAXLINE = 4096
 	PORT = 9000
-	usernames = []
 	
 	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	sock.bind(('', PORT))
 	sock.listen(32)
 	
-	#Move to threading
 	conn, addr = sock.accept()
 	
+	####
+	#This should all be in thread func
+	####
+	
+	#Receive Join command
 	found = False
 	while True:
 		data = struct.unpack('!Bh', conn.recv(3))
@@ -32,7 +46,7 @@ def main():
 				#Join success
 				print(str(attemptName) + ' joined the server')
 				conn.send(struct.pack('!B', 0))
-				usernames.append((attemptName, addr))
+				usernames.append((attemptName, addr, conn))
 				break
 			else:
 				for e in usernames:
@@ -49,6 +63,12 @@ def main():
 				break
 	
 	#Send user joined message
+	
+	#Main loop
+	
+	####
+	#End of thread section
+	####
 	
 	conn.close()
 	
