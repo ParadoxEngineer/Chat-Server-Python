@@ -24,7 +24,7 @@ def main():
 
     found = False 
     while True:
-       
+    
         
         reads, writes, excepts = select.select(sockets, sockets, [])
         
@@ -36,7 +36,7 @@ def main():
             #If it is client socket, recv whatever message 
             else:    
                 data = struct.unpack('!Bh', sock.recv(3))
-                print(data)
+                print(data) #FOR DEBUGGING ONLY, REMOVE LATER   
                 messageLen = data[1]
                 messageType = '!' + str(messageLen) + 's'
                 message = struct.unpack(messageType, sock.recv(struct.calcsize(messageType)))
@@ -62,7 +62,7 @@ def main():
                         print(str(message) + ' joined the server')
                         sock.send(struct.pack('!B', 0))
                         usernames.append((message, sock))
-                   
+                
                 #Close client socket
                 if data[0] == 1:
                     reads.pop(reads.index(sock))
@@ -71,7 +71,8 @@ def main():
                     #Delete name and socket from list
                     for s in usernames:
                         if s[1] == sock:
-                            usernames.pop(usernames.index(s))                   
+                            usernames.pop(usernames.index(s))
+                #TODO: Send message to all clients that this client is leaving the chat                   
                             
                 if data[0] == 2:
                     if message:
@@ -91,7 +92,7 @@ def main():
                     sock.send(reply[0])
         if reply:
             reply.pop(0)
-                        
+                       
        
                     
 	#close server socket	
