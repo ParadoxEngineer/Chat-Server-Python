@@ -19,20 +19,20 @@ def main():
 	
 	# Join command
 	while True:
-		packType = '!Bh' + str(len(username)) + 's'
-		sock.send(struct.pack(packType, 0, len(username), username.encode('ASCII')))
-		
-		#sock.send(struct.pack('!Bh', 0, 7))
-		
-		print(struct.pack(packType, 0, len(username), username.encode('ASCII')))
-		
-		data = struct.unpack('!B', sock.recv(MAXLINE))
-		
-		if data[0] == 0:
-			break
-		
-		username = input('Username rejected, enter a new username: ')
-	
+		if len(username) > 0:
+			packType = '!Bh' + str(len(username)) + 's'
+			sock.send(struct.pack(packType, 0, len(username), username.encode('ASCII')))
+			
+			#Debug STUB
+			#print(struct.pack(packType, 0, len(username), username.encode('ASCII')))
+			
+			data = struct.unpack('!B', sock.recv(MAXLINE))
+			if data[0] == 0:
+				break
+			
+			username = input('Username rejected, enter a new username: ')
+		else:
+			username = input('Username cannot be blank, enter a username: ')
 	
 	sock.close()
 
