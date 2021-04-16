@@ -24,6 +24,7 @@ def main():
 
     found = False 
     while True:
+       
         
         reads, writes, excepts = select.select(sockets, sockets, [])
         
@@ -50,8 +51,8 @@ def main():
                         usernames.append((message, sock))
                         break
                     else:
-                        for e in usernames:
-                            if e[0] == message:
+                        for name in usernames:
+                            if name[0] == message:
                                 #Join fail
                                 sock.send(struct.pack('!B', 1))
                                 found = True
@@ -61,8 +62,17 @@ def main():
                         print(str(message) + ' joined the server')
                         sock.send(struct.pack('!B', 0))
                         usernames.append((message, sock))
-                
-                
+                   
+                #Close client socket
+                if data[0] == 1:
+                    reads.pop(reads.index(sock))
+                    writes.pop(writes.index(sock))
+                    sockets.pop(sockets.index(sock))
+                    #Delete name and socket from list
+                    for s in usernames:
+                        if s[1] == sock:
+                            usernames.pop(usernames.index(s))                   
+                            
                 if data[0] == 2:
                     if message:
                         print(message)
