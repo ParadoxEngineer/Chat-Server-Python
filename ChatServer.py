@@ -1,4 +1,10 @@
-# Server
+#############################
+#
+# File name: ChatServer.py
+# Notes: Python 3
+#
+#############################
+
 import socket
 import threading
 import struct
@@ -82,7 +88,7 @@ def main():
                     for s in usernames:
                         if s[1] == sock:
                             usernames.pop(usernames.index(s))
-                #TODO: Send message to all clients that this client is leaving the chat                   
+                #TODO: Send message to all clients that this client is leaving the chat
                             
                 if data[0] == 2:
                     if message:
@@ -98,13 +104,13 @@ def main():
         #If there is a message in the list, send all of them one at a time
         for sock in writes:
             if sock.fileno() != sfd: 
-                if reply:             
+                if reply:
                     sock.send(reply[0])
         if reply:
             reply.pop(0)
-                                      
-	#close server socket	
-	sock.close()
-	
+        
+    #close server socket
+    sock.close()
+
 if __name__ == "__main__":
 	main()

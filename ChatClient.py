@@ -1,11 +1,16 @@
-# Client
+#############################
+#
+# File name: ChatClient.py
+# Notes: Python 3
+#
+#############################
+
 import socket
 import struct
 import sys
 import select
 import threading
 import tkinter as tk
-        
 
 def inputHandler(sock, username):
     while True:
