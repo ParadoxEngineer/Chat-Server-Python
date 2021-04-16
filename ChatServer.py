@@ -15,12 +15,12 @@ usernames = []
 
 #Sends given message to all users (for Join/Leave notices and Talk)
 def sendMessage(message):
-	messageLen = len(message)
-	packString = '!Bh' + str(messageLen) + 's'
-	
-	for e in usernames:
-		#This syntax may be off, needs testing
-		usernames[e][2].send(struct.pack(packString, 2, messageLen, message))
+    messageLen = len(message)
+    packString = '!Bh' + str(messageLen) + 's'
+    
+    for e in usernames:
+        #This syntax may be off, needs testing
+        usernames[e][2].send(struct.pack(packString, 2, messageLen, message))
 
 def main():
     MAXLINE = 4096
@@ -113,4 +113,4 @@ def main():
     sock.close()
 
 if __name__ == "__main__":
-	main()
+    main()
