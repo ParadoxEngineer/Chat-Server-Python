@@ -35,7 +35,9 @@ def main():
 	found = False
 	while True:
 		data = struct.unpack('!Bh', conn.recv(3))
-		print(data)
+		
+		#Debug STUB
+		#print(data)
 		nameLen = data[1]
 		namePackType = '!' + str(nameLen) + 's'
 		attemptName = struct.unpack(namePackType, conn.recv(MAXLINE))
