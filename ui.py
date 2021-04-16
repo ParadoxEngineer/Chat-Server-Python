@@ -68,6 +68,7 @@ class App:
 
     def sendMessage(self):
         #Get message from user and send it to server
+        messageToSend = ''
         messageToSend = self.userInput.get('1.0', 'end')
         packType = '!Bh' + str(len(messageToSend)) + 's'
         self.sock.send(struct.pack(packType, 2, len(messageToSend), messageToSend.encode('ASCII')))
