@@ -69,9 +69,17 @@ class App:
     def sendMessage(self):
         #Get message from user and send it to server
         messageToSend = ''
+        prtclNo = 2
         messageToSend = self.userInput.get('1.0', 'end')
+        #Set the type of message
+        temp = messageToSend.split()
+        if temp[0] == '@list':
+            prtclNo = 3
+        elif temp[0][0] == '@':
+            prtclNo = 4
+
         packType = '!Bh' + str(len(messageToSend)) + 's'
-        self.sock.send(struct.pack(packType, 2, len(messageToSend), messageToSend.encode('ASCII')))
+        self.sock.send(struct.pack(packType, prtclNo, len(messageToSend), messageToSend.encode('ASCII')))
 
     def updateChatScreen(self):
         while True:
