@@ -21,7 +21,8 @@ def main():
     usernames = []
     sockets = []
     reply = [] #Hold all the messages in bytes (already packed)
-    flags = [] #Hold which type of message to send back to client. Helpful for direct and list.
+    listOfNames = [] #list of names message to send back to client. Helpful for direct and list.
+    direct = [] #Direct message
     
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(('', PORT))
@@ -82,7 +83,8 @@ def main():
                         if s[1] == sock:
                             usernames.pop(usernames.index(s))
                 #TODO: Send message to all clients that this client is leaving the chat                   
-                            
+
+                #Normal Message            
                 if data[0] == 2:
                     if message:
                         print(message)
@@ -94,14 +96,25 @@ def main():
                                 packType = '!Bh' + str(len(message)) + 's'
                                 reply.append(struct.pack(packType, 2, len(message), message.encode('ASCII'))) 
 
+                #Message to ask for list
                 if data[0] == 3:
                     message = ''
-                    for n in username:
+                    for n in usernames:
                         message = message + ',' + n[0]
                     for name in usernames:
                         if name[1].fileno() == sock.fileno():
                             packType = '!Bh' + str(len(message)) + 's'
                             listOfNames.append((sock, struct.pack(packType, 3, len(message), message.encode('ASCII'))))
+
+                #Direct message
+                if data[0] == 4:
+                    temp = message.split()
+                    for name in usernames:
+                        if name[1] == sock:
+                            message = '[' + name[0] + ' Private' + ']' + message[len(temp[0]):]
+                        if name[0] == temp[0][1:]:                
+                            packType = '!Bh' + str(len(message)) + 's'
+                            direct.append((name[1], struct.pack(packType, 4, len(message), message.encode('ASCII'))))
 
         
         #If there is a message in the list, send all of them one at a time
@@ -113,7 +126,13 @@ def main():
                     for s in listOfNames:
                         if sock == s[0]:
                             sock.send(s[1])
-                            s.pop(0)
+                            listOfNames.pop(0)
+                if direct:
+                    for d in direct:
+                        if sock == d[0]:
+                            sock.send(d[1])
+                            direct.pop(0)
+
 
         if reply:
             reply.pop(0)

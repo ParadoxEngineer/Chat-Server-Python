@@ -77,7 +77,6 @@ class App:
             prtclNo = 3
         elif temp[0][0] == '@':
             prtclNo = 4
-
         packType = '!Bh' + str(len(messageToSend)) + 's'
         self.sock.send(struct.pack(packType, prtclNo, len(messageToSend), messageToSend.encode('ASCII')))
 
