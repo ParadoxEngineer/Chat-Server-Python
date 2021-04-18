@@ -4,8 +4,6 @@ import threading
 import struct
 import select
 
-#def clientHandler():
-#	
 
 def main():
     MAXLINE = 4096
