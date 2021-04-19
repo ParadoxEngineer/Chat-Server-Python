@@ -28,72 +28,102 @@ def main():
     
     sfd = sock.fileno()
 
+    
+    # Main loop
     found = False 
     while True:
     
-        
+        # Get sockets with incoming data
         reads, writes, excepts = select.select(sockets, sockets, [])
         
+        # Loop through incoming data
         for sock in reads:
-            #If this is a server socket, accept connections
+            # If this is a server socket, accept connections
             if sock.fileno() == sfd:
                 conn, addr = sock.accept()
                 sockets.append(conn)
-            #If it is client socket, recv whatever message 
+            # If it is client socket, recv whatever message 
             else:    
-                data = struct.unpack('!Bh', sock.recv(3))
-		#Debug STUB
-                #print(data)  
-                messageLen = data[1]
-                messageType = '!' + str(messageLen) + 's'
-                message = struct.unpack(messageType, sock.recv(struct.calcsize(messageType)))
-                message = message[0].decode('ASCII')
+                #data = struct.unpack('!Bh', sock.recv(3))
+
+                # Recieve command type
+                data = struct.unpack('!B', sock.recv(1))
                 
+                # Join - Attempt to add connection
                 if data[0] == 0:
-                    #The first user will always be connected
+                    # Get length/message
+                    messageLen = struct.unpack('!h', sock.recv(2))[0]
+                    messageType = '!' + str(messageLen) + 's'
+                    message = struct.unpack(messageType, sock.recv(struct.calcsize(messageType)))
+                    message = message[0].decode('ASCII')
+                    
+                    # The first user will always be connected
                     if len(usernames) == 0:
-                        #Join success
+                        # Join success
                         print(str(message) + ' joined the server')
                         sock.send(struct.pack('!B', 0))
                         usernames.append((message, sock))
+                        
+                        joinMessage = '**' + str(message) + ' joined the server**\n'
+                        print(joinMessage)
+                        packType = '!Bh' + str(len(joinMessage)) + 's'
+                        reply.append(struct.pack(packType, 2, len(joinMessage), joinMessage.encode('ASCII')))
                         break
                     else:
                         for name in usernames:
                             if name[0] == message:
-                                #Join fail
+                                # Join fail
                                 sock.send(struct.pack('!B', 1))
                                 found = True
                                 break
                     if not found:
-                        #Join success
-                        print(str(message) + ' joined the server')
+                        # Join success
                         sock.send(struct.pack('!B', 0))
                         usernames.append((message, sock))
+                        
+                        joinMessage = '**' + str(message) + ' is joining the chat**\n'
+                        print(joinMessage)
+                        packType = '!Bh' + str(len(joinMessage)) + 's'
+                        reply.append(struct.pack(packType, 2, len(joinMessage), joinMessage.encode('ASCII')))
                 
-                #Close client socket
+                # Leave - Close client socket
                 if data[0] == 1:
                     reads.pop(reads.index(sock))
                     writes.pop(writes.index(sock))
                     sockets.pop(sockets.index(sock))
-                    #Delete name and socket from list
+                    
+                    # Delete name and socket from list
                     for s in usernames:
                         if s[1].fileno() == sock.fileno():
+                            # Load leave message
+                            leaveMessage = '**' + s[0] + ' is leaving the chat**\n'
+                            print(leaveMessage)
+                            packType = '!Bh' + str(len(leaveMessage)) + 's'
+                            reply.append(struct.pack(packType, 2, len(leaveMessage), leaveMessage.encode('ASCII')))
+                            
+                            # Remove connection from list
                             usernames.pop(usernames.index(s))
-                #TODO: Send message to all clients that this client is leaving the chat                   
-
-                #Normal Message            
+                            # TODO: Check if connection (not sock) needs to be closed
+                
+                # Talk - Normal Message
                 if data[0] == 2:
+                    # Get length/message
+                    messageLen = struct.unpack('!h', sock.recv(2))[0]
+                    messageType = '!' + str(messageLen) + 's'
+                    message = struct.unpack(messageType, sock.recv(struct.calcsize(messageType)))
+                    message = message[0].decode('ASCII')
+                    
                     if message:
                         print(message)
-                        #Find out who is sending the message
-                        #and append their name to the message before sending to all clients
+                        # Find out who is sending the message
+                        # and append their name to the message before sending to all clients
                         for name in usernames:
                             if name[1].fileno() == sock.fileno():
                                 message = '[' + name[0] + ']' + message
                                 packType = '!Bh' + str(len(message)) + 's'
-                                reply.append(struct.pack(packType, 2, len(message), message.encode('ASCII'))) 
+                                reply.append(struct.pack(packType, 2, len(message), message.encode('ASCII')))
 
-                #Message to ask for list
+                # List - Message to ask for list
                 if data[0] == 3:
                     message = ''
                     for n in usernames:
@@ -104,7 +134,7 @@ def main():
                             packType = '!Bh' + str(len(message)) + 's'
                             listOfNames.append((sock, struct.pack(packType, 3, len(message), message.encode('ASCII'))))
 
-                #Direct message
+                # Direct
                 if data[0] == 4:
                     dm = ''
                     temp = message.split()
@@ -118,7 +148,7 @@ def main():
                             print(direct)
 
         
-        #If there is a message in the list, send all of them one at a time
+        # If there is a message in the list, send all of them one at a time
         for sock in writes:
             if sock.fileno() != sfd: 
                 if reply:
@@ -135,13 +165,13 @@ def main():
                             sock.send(d[1])
                             direct.pop(direct.index(d))
 
-
+        # Clear reply stack
         if reply:
             reply.pop(0)
                        
             
-	#close server socket	
+    # Close server socket
     sock.close()
-	
+
 if __name__ == "__main__":
     main()
