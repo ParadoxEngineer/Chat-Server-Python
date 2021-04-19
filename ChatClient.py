@@ -1,11 +1,16 @@
-# Client
+#############################
+#
+# File name: ChatClient.py
+# Notes: Python 3
+#
+#############################
+
 import socket
 import struct
 import sys
 import select
 import threading
 import tkinter as tk
-        
 
 def inputHandler(sock, username):
     while True:
@@ -25,45 +30,46 @@ def outputHandler(sock):
         
 
 def main():
-
     if len(sys.argv) < 2:
         IP = input('Enter server IP: ')
     else:
         IP = sys.argv[1]
     PORT = 9000
-
+    
     username = input('Enter your username: ')
-
+    
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((IP, PORT)) 
-
+    
     
     while True:
-        #Send username to the server, 0 is the join command
-        packType = '!Bh' + str(len(username)) + 's'
-        sock.send(struct.pack(packType, 0, len(username), username.encode('ASCII')))
-        
-        #Receive respond from server whether the name is taken or not
-        data = struct.unpack('!B', sock.recv(struct.calcsize('!B')))
-        if data[0] == 0:
+        if len(username) > 0:
+            #Send username to the server, 0 is the join command
+            packType = '!Bh' + str(len(username)) + 's'
+            sock.send(struct.pack(packType, 0, len(username), username.encode('ASCII')))
             
-            break
-        
-        username = input('Username rejected, enter a new username: ')
-
+            #Receive respond from server whether the name is taken or not
+            data = struct.unpack('!B', sock.recv(struct.calcsize('!B')))
+            if data[0] == 0:
+                break
+            
+            username = input('Username rejected, enter a new username: ')
+        else:
+            username = input('Username cannot be blank, enter a username: ')
+    
     #Get user inputs
     inputThread = threading.Thread(target=inputHandler, args=(sock, username))
     inputThread.daemon = True
     inputThread.start()
-
+    
     #Get ouputs 
     OutputThread = threading.Thread(target=outputHandler, args=(sock,))
     OutputThread.daemon = True
     OutputThread.start()
-
+    
     inputThread.join()
     OutputThread.join()    
-
+    
     root.mainloop()
     sock.close()
 
