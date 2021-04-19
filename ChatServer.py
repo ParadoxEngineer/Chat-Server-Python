@@ -1,19 +1,26 @@
-# Server
+#############################
+#
+# File name: ChatServer.py
+# Notes: Python 3
+#
+#############################
+
 import socket
 import threading
 import struct
 import select
 
+#Maybe uncessecary
 usernames = []
 
 #Sends given message to all users (for Join/Leave notices and Talk)
 def sendMessage(message):
-	messageLen = len(message)
-	packString = '!Bh' + str(messageLen) + 's'
-	
-	for e in usernames:
-		#This syntax may be off, needs testing
-		usernames[e][2].send(struct.pack(packString, 2, messageLen, message))
+    messageLen = len(message)
+    packString = '!Bh' + str(messageLen) + 's'
+    
+    for e in usernames:
+        #This syntax may be off, needs testing
+        usernames[e][2].send(struct.pack(packString, 2, messageLen, message))
 
 def main():
     MAXLINE = 4096
@@ -46,7 +53,8 @@ def main():
             #If it is client socket, recv whatever message 
             else:    
                 data = struct.unpack('!Bh', sock.recv(3))
-                print(data) #FOR DEBUGGING ONLY, REMOVE LATER   
+		#Debug STUB
+                #print(data)  
                 messageLen = data[1]
                 messageType = '!' + str(messageLen) + 's'
                 message = struct.unpack(messageType, sock.recv(struct.calcsize(messageType)))
@@ -100,7 +108,8 @@ def main():
                 if data[0] == 3:
                     message = ''
                     for n in usernames:
-                        message += n[0] + ',' 
+                        message += n[0] + ','
+                    message += '\n' 
                     for name in usernames:
                         if name[1].fileno() == sock.fileno():
                             packType = '!Bh' + str(len(message)) + 's'
@@ -123,17 +132,17 @@ def main():
         #If there is a message in the list, send all of them one at a time
         for sock in writes:
             if sock.fileno() != sfd: 
-                if reply:             
+                if reply:
                     sock.send(reply[0])
                 if listOfNames:
                     for s in listOfNames:
-                        if sock == s[0]:
+                        if sock.fileno() == s[0].fileno():
                             sock.send(s[1])
                             listOfNames.pop(listOfNames.index(s))
                 if direct:
                     # print(direct)
                     for d in direct:
-                        if sock == d[0]:
+                        if sock.fileno() == d[0].fileno():
                             sock.send(d[1])
                             direct.pop(direct.index(d))
 
@@ -146,4 +155,4 @@ def main():
     sock.close()
 	
 if __name__ == "__main__":
-	main()
+    main()
