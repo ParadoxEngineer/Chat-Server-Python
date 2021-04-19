@@ -80,7 +80,7 @@ def main():
                     sockets.pop(sockets.index(sock))
                     #Delete name and socket from list
                     for s in usernames:
-                        if s[1] == sock:
+                        if s[1].fileno() == sock.fileno():
                             usernames.pop(usernames.index(s))
                 #TODO: Send message to all clients that this client is leaving the chat                   
 
@@ -108,13 +108,16 @@ def main():
 
                 #Direct message
                 if data[0] == 4:
+                    dm = ''
                     temp = message.split()
                     for name in usernames:
-                        if name[1] == sock:
-                            message = '[' + name[0] + ' Private' + ']' + message[len(temp[0]):]
+                        if name[1].fileno() == sock.fileno():
+                            dm = '[' + name[0] + ' Private' + ']' + ' '.join(temp[1:]) + '\n'
+                    for name in usernames:
                         if name[0] == temp[0][1:]:                
-                            packType = '!Bh' + str(len(message)) + 's'
-                            direct.append((name[1], struct.pack(packType, 4, len(message), message.encode('ASCII'))))
+                            packType = '!Bh' + str(len(dm)) + 's'
+                            direct.append((name[1], struct.pack(packType, 4, len(dm), dm.encode('ASCII'))))
+                            print(direct)
 
         
         #If there is a message in the list, send all of them one at a time
@@ -126,12 +129,13 @@ def main():
                     for s in listOfNames:
                         if sock == s[0]:
                             sock.send(s[1])
-                            listOfNames.pop(0)
+                            listOfNames.pop(listOfNames.index(s))
                 if direct:
+                    # print(direct)
                     for d in direct:
                         if sock == d[0]:
                             sock.send(d[1])
-                            direct.pop(0)
+                            direct.pop(direct.index(d))
 
 
         if reply:

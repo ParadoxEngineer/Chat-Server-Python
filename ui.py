@@ -90,6 +90,7 @@ class App:
                     messageType = '!' + str(messageLen) + 's'
                     message = struct.unpack(messageType, self.sock.recv(struct.calcsize(messageType)))
                     message = message[0].decode('ASCII')
+                    print(message)
                     self.chatScreen.insert('end', message)
             except:
                 pass
