@@ -100,7 +100,7 @@ def main():
                 if data[0] == 3:
                     message = ''
                     for n in usernames:
-                        message = message + ',' + n[0]
+                        message += n[0] + ',' 
                     for name in usernames:
                         if name[1].fileno() == sock.fileno():
                             packType = '!Bh' + str(len(message)) + 's'
