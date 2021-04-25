@@ -46,17 +46,28 @@ def main():
             else:    
                 #data = struct.unpack('!Bh', sock.recv(3))
 
-                # Recieve command type
-                data = struct.unpack('!B', sock.recv(1))
-                
+                # Receive command type
+                sockData = sock.recv(1)
+                #When a client disconnects, the sockdata returns nothing, causeing a cascading error
+                # This if statement catches that an sets the instruction type to -1 which closes the connection like 1 does
+                if sockData.decode() == "":
+                    data = [-1]
+                else:
+                    data = struct.unpack('!B', sockData)
+
                 # Join - Attempt to add connection
                 if data[0] == 0:
                     # Get length/message
-                    messageLen = struct.unpack('!h', sock.recv(2))[0]
-                    messageType = '!' + str(messageLen) + 's'
-                    message = struct.unpack(messageType, sock.recv(struct.calcsize(messageType)))
-                    message = message[0].decode('ASCII')
-                    
+                    recvData =  sock.recv(2)
+                    try:
+                        messageLen = struct.unpack('!h', recvData)[0]
+                        messageType = '!' + str(messageLen) + 's'
+                        message = struct.unpack(messageType, sock.recv(struct.calcsize(messageType)))
+                        message = message[0].decode('ASCII')
+                    except:
+                        print("The message data was not in an expected format")
+                        print("Received ", recvData)
+                        print(recvData.decode())
                     # The first user will always be connected
                     if len(usernames) == 0:
                         # Join success
@@ -87,7 +98,7 @@ def main():
                         reply.append(struct.pack(packType, 2, len(joinMessage), joinMessage.encode('ASCII')))
                 
                 # Leave - Close client socket
-                if data[0] == 1:
+                if data[0] == 1 or data[0] == -1:
                     reads.pop(reads.index(sock))
                     writes.pop(writes.index(sock))
                     sockets.pop(sockets.index(sock))
@@ -136,17 +147,20 @@ def main():
 
                 # Direct
                 if data[0] == 4:
+                    messageLen = struct.unpack('!h', sock.recv(2))[0]
+                    messageType = '!' + str(messageLen) + 's'
+                    message = struct.unpack(messageType, sock.recv(struct.calcsize(messageType)))
+                    message = message[0].decode('ASCII')
                     dm = ''
                     temp = message.split()
                     for name in usernames:
                         if name[1].fileno() == sock.fileno():
                             dm = '[' + name[0] + ' Private' + ']' + ' '.join(temp[1:]) + '\n'
                     for name in usernames:
-                        if name[0] == temp[0][1:]:                
+                        if name[0] == temp[0][1:]:
                             packType = '!Bh' + str(len(dm)) + 's'
-                            direct.append((name[1], struct.pack(packType, 4, len(dm), dm.encode('ASCII'))))
-                            print(direct)
-
+                            direct.append((name[1], struct.pack(packType, 2, len(dm), dm.encode('ASCII'))))
+                            #print(direct)
         
         # If there is a message in the list, send all of them one at a time
         for sock in writes:

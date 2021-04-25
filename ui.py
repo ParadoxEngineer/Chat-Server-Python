@@ -75,11 +75,19 @@ class App:
         temp = messageToSend.split()
         if temp[0] == '@list':
             prtclNo = 3
+            #packType = '!Bh' + str(len(messageToSend)) + 's'
+            packType = '!B'
+            self.sock.send(struct.pack(packType, prtclNo))
         elif temp[0][0] == '@':
             prtclNo = 4
-        packType = '!Bh' + str(len(messageToSend)) + 's'
-        self.sock.send(struct.pack(packType, prtclNo, len(messageToSend), messageToSend.encode('ASCII')))
+            packType = '!Bh' + str(len(messageToSend)) + 's'
+            sendData = packType, prtclNo, len(messageToSend), messageToSend.encode('ASCII')
+            self.sock.send(struct.pack(packType, prtclNo, len(messageToSend), messageToSend.encode('ASCII')))
 
+        else:
+            packType = '!Bh' + str(len(messageToSend)) + 's'
+            sendData = packType, prtclNo, len(messageToSend), messageToSend.encode('ASCII')
+            self.sock.send(struct.pack(packType, prtclNo, len(messageToSend), messageToSend.encode('ASCII')))
     def updateChatScreen(self):
         while True:
             try:
