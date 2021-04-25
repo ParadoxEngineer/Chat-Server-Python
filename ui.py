@@ -32,7 +32,8 @@ class App:
 
         self.chatScreen = tk.Text(self.mainFrame, wrap='word')
         self.chatScreen.pack(expand=True, fill=tk.BOTH)
-        
+        self.chatScreen.config(state='disabled')
+
         self.userInput = tk.Text(self.mainFrame, height=5, wrap='word')
         self.userInput.pack(side=tk.LEFT, expand=True, fill=tk.X)
         
@@ -88,7 +89,9 @@ class App:
             packType = '!Bh' + str(len(messageToSend)) + 's'
             sendData = packType, prtclNo, len(messageToSend), messageToSend.encode('ASCII')
             self.sock.send(struct.pack(packType, prtclNo, len(messageToSend), messageToSend.encode('ASCII')))
+        self.userInput.delete('1.0', tk.END)
     def updateChatScreen(self):
+
         while True:
             try:
                 if self.connectBtn['text'] == 'Disconnect':
@@ -99,9 +102,12 @@ class App:
                     message = struct.unpack(messageType, self.sock.recv(struct.calcsize(messageType)))
                     message = message[0].decode('ASCII')
                     print(message)
+                    self.chatScreen.config(state='normal')
                     self.chatScreen.insert('end', message)
+                    self.chatScreen.config(state='disabled')
             except:
                 pass
+
 
 def main():
     root = tk.Tk()
