@@ -11,6 +11,11 @@ import struct
 import select
 
 
+
+
+
+
+
 def main():
     MAXLINE = 4096
     PORT = 9000
@@ -28,7 +33,8 @@ def main():
     
     sfd = sock.fileno()
 
-    
+
+
     # Main loop
     found = False 
     while True:
@@ -71,7 +77,6 @@ def main():
                     # The first user will always be connected
                     if len(usernames) == 0:
                         # Join success
-                        print(str(message) + ' joined the server')
                         sock.send(struct.pack('!B', 0))
                         usernames.append((message, sock))
                         
@@ -96,9 +101,14 @@ def main():
                         print(joinMessage)
                         packType = '!Bh' + str(len(joinMessage)) + 's'
                         reply.append(struct.pack(packType, 2, len(joinMessage), joinMessage.encode('ASCII')))
-                
+                    else: # if username is already taken return a 1
+                        sock.send(struct.pack('!B', 1))
+                        print("Username is taken")
+
+
                 # Leave - Close client socket
                 if data[0] == 1 or data[0] == -1:
+
                     reads.pop(reads.index(sock))
                     writes.pop(writes.index(sock))
                     sockets.pop(sockets.index(sock))

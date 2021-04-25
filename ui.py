@@ -57,6 +57,12 @@ class App:
             if data[0] == 0:
                 self.usernameEntry.config(state='disabled')
                 self.connectBtn.config(bg='red', text='Disconnect')
+            else:
+                print("Your username was already taken")
+                self.chatScreen.config(state='normal')
+                self.chatScreen.insert('end', "Your username is already taken.\n")
+                self.chatScreen.config(state='disabled')
+
         else:
             username = self.usernameEntry.get()
             packType = '!Bh' + str(len(username)) + 's'
@@ -74,7 +80,9 @@ class App:
         messageToSend = self.userInput.get('1.0', 'end')
         #Set the type of message
         temp = messageToSend.split()
-        if temp[0] == '@list':
+        if  messageToSend == "\n" : # if nothing was typed in the message box, do nothing
+            pass
+        elif temp[0] == '@list':
             prtclNo = 3
             #packType = '!Bh' + str(len(messageToSend)) + 's'
             packType = '!B'
