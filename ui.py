@@ -42,20 +42,21 @@ class App:
 
     def joinOrLeaveServer(self):
         if self.connectBtn['text'] == 'Connect':
-            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.sock.connect((self.IP, self.PORT)) 
-
             username = self.usernameEntry.get()
 
-            #Send username to the server, 0 is the join command
-            packType = '!Bh' + str(len(username)) + 's'
-            self.sock.send(struct.pack(packType, 0, len(username), username.encode('ASCII')))
+            if username:
+                self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.sock.connect((self.IP, self.PORT)) 
+            
+                #Send username to the server, 0 is the join command
+                packType = '!Bh' + str(len(username)) + 's'
+                self.sock.send(struct.pack(packType, 0, len(username), username.encode('ASCII')))
 
-            #Receive respond from server whether the name is taken or not
-            data = struct.unpack('!B', self.sock.recv(struct.calcsize('!B')))
-            if data[0] == 0:
-                self.usernameEntry.config(state='disabled')
-                self.connectBtn.config(bg='red', text='Disconnect')
+                #Receive respond from server whether the name is taken or not
+                data = struct.unpack('!B', self.sock.recv(struct.calcsize('!B')))
+                if data[0] == 0:
+                    self.usernameEntry.config(state='disabled')
+                    self.connectBtn.config(bg='red', text='Disconnect')
         else:
             username = self.usernameEntry.get()
             packType = '!Bh' + str(len(username)) + 's'
