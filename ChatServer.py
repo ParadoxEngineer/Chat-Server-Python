@@ -42,33 +42,36 @@ def main():
             #If it is client socket, recv whatever message 
             else:    
                 data = struct.unpack('!Bh', sock.recv(3))
-		#Debug STUB
-                #print(data)  
+                print(data)  
                 messageLen = data[1]
                 messageType = '!' + str(messageLen) + 's'
                 message = struct.unpack(messageType, sock.recv(struct.calcsize(messageType)))
                 message = message[0].decode('ASCII')
                 
                 if data[0] == 0:
+                    nameToCheck = ''
                     #The first user will always be connected
                     if len(usernames) == 0:
                         #Join success
                         print(str(message) + ' joined the server')
                         sock.send(struct.pack('!B', 0))
                         usernames.append((message, sock))
-                        break
                     else:
-                        for name in usernames:
-                            if name[0] == message:
+                        for x in range(len(usernames)):
+                            print(usernames[x][0])
+                            if nameToCheck == message:
                                 #Join fail
                                 sock.send(struct.pack('!B', 1))
-                                found = True
                                 break
-                    if not found:
-                        #Join success
-                        print(str(message) + ' joined the server')
-                        sock.send(struct.pack('!B', 0))
-                        usernames.append((message, sock))
+                            else:
+                                #Join success
+                                print(str(message) + ' joined the server')
+                                sock.send(struct.pack('!B', 0))
+                                usernames.append((message, sock))
+                                break
+                    continue
+                
+                        
                 
                 #Close client socket
                 if data[0] == 1:

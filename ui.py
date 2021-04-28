@@ -9,11 +9,13 @@ import time
 
 class App:
     def __init__(self, master):
-        self.IP = '127.0.0.1'
-        self.PORT = 9000
         self.master = master
         self.master.title('Chat App')
-        self.sock = ''
+        self.IP = '127.0.0.1'
+        self.PORT = 9000
+        self.isConnect = False
+        
+        
     
         self.outputThread = threading.Thread(target=self.updateChatScreen)
         self.outputThread.daemon = True
@@ -27,6 +29,8 @@ class App:
         self.usernameEntry = tk.Entry(self.mainFrame)
         self.usernameEntry.pack()
 
+
+
         self.connectBtn = tk.Button(self.mainFrame, text='Connect', command=self.joinOrLeaveServer, bg='green')
         self.connectBtn.pack()
 
@@ -38,33 +42,42 @@ class App:
         
         self.sendBtn = tk.Button(self.mainFrame, text='Send', width=10, command=self.sendMessage)
         self.sendBtn.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
-        self.outputThread.start()
+        
 
     def joinOrLeaveServer(self):
+        username = self.usernameEntry.get()
         if self.connectBtn['text'] == 'Connect':
-            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.sock.connect((self.IP, self.PORT)) 
+            #Connect for the first time, it might only connect the socket if the name is taken
+            if self.isConnect == False:
+                self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.sock.connect((self.IP, self.PORT))
+                self.isConnect = True
 
-            username = self.usernameEntry.get()
+            if len(username) == 0:
+                self.chatScreen.insert('end', '!!!USERNAME CANNOT BE EMPTY!!!')
+            elif len(username) != 0:
+                #Send username to the server, 0 is the join command
+                packType = '!Bh' + str(len(username)) + 's'
+                self.sock.send(struct.pack(packType, 0, len(username), username.encode('ASCII')))
 
-            #Send username to the server, 0 is the join command
-            packType = '!Bh' + str(len(username)) + 's'
-            self.sock.send(struct.pack(packType, 0, len(username), username.encode('ASCII')))
+                #Receive respond from server whether the name is taken or not
+                data = struct.unpack('!B', self.sock.recv(struct.calcsize('!B')))
+                print(data)
+                if data[0] == 0:
+                    self.usernameEntry.config(state='disabled')
+                    self.connectBtn.config(bg='red', text='Disconnect')
+                    self.outputThread.start()
+                elif data[0] == 1:
+                    self.chatScreen.insert('end', '!!!USERNAME TAKEN!!!')
 
-            #Receive respond from server whether the name is taken or not
-            data = struct.unpack('!B', self.sock.recv(struct.calcsize('!B')))
-            if data[0] == 0:
-                self.usernameEntry.config(state='disabled')
-                self.connectBtn.config(bg='red', text='Disconnect')
-        else:
-            username = self.usernameEntry.get()
+        elif self.connectBtn['text'] == 'Disconnect':
             packType = '!Bh' + str(len(username)) + 's'
             self.sock.send(struct.pack(packType, 1, len(username), username.encode('ASCII')))
             self.usernameEntry.config(state='normal')
             self.connectBtn.config(bg='green', text='Connect')
-            time.sleep(1)
             self.sock.close()
- 
+            self.isConnect = False
+
 
     def sendMessage(self):
         #Get message from user and send it to server
@@ -99,6 +112,7 @@ def main():
     root = tk.Tk()
     app = App(root)
     root.mainloop()
+    print("why here")
 
     
     
