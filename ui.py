@@ -41,6 +41,9 @@ class App:
         self.sendBtn.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
         self.outputThread.start()
 
+
+
+
     def joinOrLeaveServer(self):
         if self.connectBtn['text'] == 'Connect':
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -117,12 +120,14 @@ class App:
                 pass
 
 
+
+
 def main():
     root = tk.Tk()
     app = App(root)
     root.mainloop()
 
-    
+
     
 if __name__ == '__main__':
     main()
