@@ -56,9 +56,10 @@ def main():
                         print(str(message) + ' joined the server')
                         sock.send(struct.pack('!B', 0))
                         usernames.append((message, sock))
+                        continue
                     else:
                         for x in range(len(usernames)):
-                            print(usernames[x][0])
+                            print(usernames)
                             if nameToCheck == message:
                                 #Join fail
                                 sock.send(struct.pack('!B', 1))
