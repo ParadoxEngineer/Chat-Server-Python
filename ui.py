@@ -15,8 +15,6 @@ class App:
         self.PORT = 9000
         self.isConnect = False
         
-        
-    
         self.outputThread = threading.Thread(target=self.updateChatScreen)
         self.outputThread.daemon = True
       
@@ -28,8 +26,6 @@ class App:
 
         self.usernameEntry = tk.Entry(self.mainFrame)
         self.usernameEntry.pack()
-
-
 
         self.connectBtn = tk.Button(self.mainFrame, text='Connect', command=self.joinOrLeaveServer, bg='green')
         self.connectBtn.pack()
@@ -44,9 +40,6 @@ class App:
         self.sendBtn = tk.Button(self.mainFrame, text='Send', width=10, command=self.sendMessage)
         self.sendBtn.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
         
-
-
-
 
     def joinOrLeaveServer(self):
         username = self.usernameEntry.get()
@@ -73,15 +66,13 @@ class App:
             if data[0] == 0:
                 self.usernameEntry.config(state='disabled')
                 self.connectBtn.config(bg='red', text='Disconnect')
-            else:
+            elif data[0] == 0:
                 print("Your username was already taken")
                 self.chatScreen.config(state='normal')
                 self.chatScreen.insert('end', "Your username is already taken.\n")
                 self.chatScreen.config(state='disabled')
 
-        else:
-            username = self.usernameEntry.get()
-            packType = '!Bh' + str(len(username)) + 's'
+        if self.connectBtn['text'] == 'Disconnect':
             self.sock.send(struct.pack(packType, 1, len(username), username.encode('ASCII')))
             self.usernameEntry.config(state='normal')
             self.connectBtn.config(bg='green', text='Connect')

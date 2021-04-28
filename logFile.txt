@@ -1,1 +1,10 @@
 =>****Log Start****
+=>****Log Start****
+=>**Cor is leaving the chat**
+ with ip: 127.0.0.1 and port: 9000
+=>****Log Start****
+=>**Cor is leaving the chat**
+ with ip: 127.0.0.1 and port: 9000
+=>****Log Start****
+=>** is leaving the chat**
+ with ip: 127.0.0.1 and port: 9000
