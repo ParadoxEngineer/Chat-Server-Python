@@ -39,8 +39,8 @@ def main():
     username = input('Enter your username: ')
     
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((IP, PORT)) 
-    
+    sock.connect((IP, PORT))
+
     
     while True:
         if len(username) > 0:
@@ -72,6 +72,8 @@ def main():
     
     root.mainloop()
     sock.close()
+
+
 
 if __name__ == "__main__":
     main()
