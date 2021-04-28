@@ -77,15 +77,22 @@ class App:
         #Get message from user and send it to server
         messageToSend = ''
         prtclNo = 2
+        isList = False
         messageToSend = self.userInput.get('1.0', 'end')
         #Set the type of message
         temp = messageToSend.split()
         if temp[0] == '@list':
             prtclNo = 3
+            isList = True
         elif temp[0][0] == '@':
             prtclNo = 4
-        packType = '!Bh' + str(len(messageToSend)) + 's'
-        self.sock.send(struct.pack(packType, prtclNo, len(messageToSend), messageToSend.encode('ASCII')))
+        
+        if isList:
+            packType = '!B'
+            self.sock.send(struct.pack(packType, prtclNo))
+        else:
+            packType = '!Bh' + str(len(messageToSend)) + 's'
+            self.sock.send(struct.pack(packType, prtclNo, len(messageToSend), messageToSend.encode('ASCII')))
 
     def updateChatScreen(self):
         while True:

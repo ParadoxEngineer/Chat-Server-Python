@@ -45,7 +45,7 @@ def main():
             # If it is client socket, recv whatever message 
             else:    
                 #data = struct.unpack('!Bh', sock.recv(3))
-
+                
                 # Recieve command type
                 data = struct.unpack('!B', sock.recv(1))
                 
