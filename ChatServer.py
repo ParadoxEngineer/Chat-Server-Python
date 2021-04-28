@@ -11,6 +11,14 @@ import struct
 import select
 
 
+# def checkUsername(target, usernames):
+#     for name in usernames:
+#         print(name)
+#         print(usernames)
+#         if name == target:
+#             return False
+#     return True
+
 def main():
     MAXLINE = 4096
     PORT = 9000
@@ -49,29 +57,20 @@ def main():
                 message = message[0].decode('ASCII')
                 
                 if data[0] == 0:
-                    nameToCheck = ''
-                    #The first user will always be connected
                     if len(usernames) == 0:
-                        #Join success
+                        print("First client always connect")
                         print(str(message) + ' joined the server')
                         sock.send(struct.pack('!B', 0))
                         usernames.append((message, sock))
-                        continue
-                    else:
-                        for x in range(len(usernames)):
-                            print(usernames)
-                            if nameToCheck == message:
+                    elif len(usernames) > 0:
+                        for x in usernames:
+                            print("Other than first")
+                            if x[0] == message:
                                 #Join fail
                                 sock.send(struct.pack('!B', 1))
-                                break
-                            else:
-                                #Join success
-                                print(str(message) + ' joined the server')
-                                sock.send(struct.pack('!B', 0))
-                                usernames.append((message, sock))
-                                break
-                    continue
-                
+                        #Join success if name not found in usernames                                        
+                        sock.send(struct.pack('!B', 0))
+                        usernames.append((message, sock))                
                         
                 
                 #Close client socket
