@@ -42,21 +42,20 @@ class App:
         
 
     def joinOrLeaveServer(self):
+        #Connect for the first time, it might only connect the socket if the name is taken that is isConnect used for
+        if self.isConnect == False:
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock.connect((self.IP, self.PORT))
+            self.isConnect = True
+
         username = self.usernameEntry.get()
+        if len(username) == 0:
+            self.chatScreen.config(state='normal')
+            self.chatScreen.insert('end', '!!!USERNAME CANNOT BE EMPTY!!!\n')
+            self.chatScreen.config(state='disabled')
+            return
+        
         if self.connectBtn['text'] == 'Connect':
-            #Connect for the first time, it might only connect the socket if the name is taken
-            if self.isConnect == False:
-                self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                self.sock.connect((self.IP, self.PORT))
-                self.isConnect = True
-
-            if len(username) == 0:
-                self.chatScreen.insert('end', '!!!USERNAME CANNOT BE EMPTY!!!')
-            elif len(username) != 0:
-                #Send username to the server, 0 is the join command
-                packType = '!Bh' + str(len(username)) + 's'
-                self.sock.send(struct.pack(packType, 0, len(username), username.encode('ASCII')))
-
             #Send username to the server, 0 is the join command
             packType = '!Bh' + str(len(username)) + 's'
             self.sock.send(struct.pack(packType, 0, len(username), username.encode('ASCII')))
@@ -66,13 +65,15 @@ class App:
             if data[0] == 0:
                 self.usernameEntry.config(state='disabled')
                 self.connectBtn.config(bg='red', text='Disconnect')
-            elif data[0] == 0:
+                self.outputThread.start()
+            elif data[0] == 1:
                 print("Your username was already taken")
                 self.chatScreen.config(state='normal')
                 self.chatScreen.insert('end', "Your username is already taken.\n")
                 self.chatScreen.config(state='disabled')
-
-        if self.connectBtn['text'] == 'Disconnect':
+            
+        elif self.connectBtn['text'] == 'Disconnect':
+            packType = '!Bh' + str(len(username)) + 's'
             self.sock.send(struct.pack(packType, 1, len(username), username.encode('ASCII')))
             self.usernameEntry.config(state='normal')
             self.connectBtn.config(bg='green', text='Connect')
@@ -89,24 +90,15 @@ class App:
         temp = messageToSend.split()
         if  messageToSend == "\n" : # if nothing was typed in the message box, do nothing
             pass
-        elif temp[0] == '@list':
+        if temp[0] == '@list':
             prtclNo = 3
-            #packType = '!Bh' + str(len(messageToSend)) + 's'
-            packType = '!B'
-            self.sock.send(struct.pack(packType, prtclNo))
         elif temp[0][0] == '@':
             prtclNo = 4
-            packType = '!Bh' + str(len(messageToSend)) + 's'
-            sendData = packType, prtclNo, len(messageToSend), messageToSend.encode('ASCII')
-            self.sock.send(struct.pack(packType, prtclNo, len(messageToSend), messageToSend.encode('ASCII')))
-
-        else:
-            packType = '!Bh' + str(len(messageToSend)) + 's'
-            sendData = packType, prtclNo, len(messageToSend), messageToSend.encode('ASCII')
-            self.sock.send(struct.pack(packType, prtclNo, len(messageToSend), messageToSend.encode('ASCII')))
+        packType = '!Bh' + str(len(messageToSend)) + 's'
+        self.sock.send(struct.pack(packType, prtclNo, len(messageToSend), messageToSend.encode('ASCII')))
         self.userInput.delete('1.0', tk.END)
-    def updateChatScreen(self):
 
+    def updateChatScreen(self):
         while True:
             try:
                 if self.connectBtn['text'] == 'Disconnect':
@@ -124,13 +116,10 @@ class App:
                 pass
 
 
-
-
 def main():
     root = tk.Tk()
     app = App(root)
     root.mainloop()
-    print("why here")
 
 
     
