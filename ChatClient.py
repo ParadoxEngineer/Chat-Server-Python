@@ -11,69 +11,130 @@ import sys
 import select
 import threading
 import tkinter as tk
+import time
 
-def inputHandler(sock, username):
-    while True:
-        userInput = input(username + '>')
-        packType = '!Bh' + str(len(userInput)) + 's'
-        sock.send(struct.pack(packType, 2, len(userInput), userInput.encode('ASCII')))
+class App:
+    def __init__(self, master):
+        self.master = master
+        self.master.title('Chat App')
+        self.IP = '127.0.0.1'
+        self.PORT = 9000
+        self.isConnect = False
+        
+        self.outputThread = threading.Thread(target=self.updateChatScreen)
+        self.outputThread.daemon = True
+      
+        self.mainFrame = tk.Frame(self.master)
+        self.mainFrame.pack(expand=True, fill=tk.BOTH)
 
-def outputHandler(sock):
-    while True:
-        #Get message from server and print it out
-        data = struct.unpack('!Bh', sock.recv(3))
-        messageLen = data[1]
-        messageType = '!' + str(messageLen) + 's'
-        message = struct.unpack(messageType, sock.recv(struct.calcsize(messageType)))
-        message = message[0].decode('ASCII')
-        print(message)
+        self.usernameLabel = tk.Label(self.mainFrame, text='Username')
+        self.usernameLabel.pack()
+
+        self.usernameEntry = tk.Entry(self.mainFrame)
+        self.usernameEntry.pack()
+
+        self.connectBtn = tk.Button(self.mainFrame, text='Connect', command=self.joinOrLeaveServer, bg='green')
+        self.connectBtn.pack()
+
+        self.chatScreen = tk.Text(self.mainFrame, wrap='word')
+        self.chatScreen.pack(expand=True, fill=tk.BOTH)
+        self.chatScreen.config(state='disabled')
+
+        self.userInput = tk.Text(self.mainFrame, height=5, wrap='word')
+        self.userInput.pack(side=tk.LEFT, expand=True, fill=tk.X)
+        
+        self.sendBtn = tk.Button(self.mainFrame, text='Send', width=10, command=self.sendMessage)
+        self.sendBtn.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
         
 
-def main():
-    if len(sys.argv) < 2:
-        IP = input('Enter server IP: ')
-    else:
-        IP = sys.argv[1]
-    PORT = 9000
-    
-    username = input('Enter your username: ')
-    
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((IP, PORT))
+    def joinOrLeaveServer(self):
+        #Connect for the first time, it might only connect the socket if the name is taken that is isConnect used for
+        if self.isConnect == False:
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock.connect((self.IP, self.PORT))
+            self.isConnect = True
 
-    
-    while True:
-        if len(username) > 0:
+        username = self.usernameEntry.get()
+        if len(username) == 0:
+            self.chatScreen.config(state='normal')
+            self.chatScreen.insert('end', '!!!USERNAME CANNOT BE EMPTY!!!\n')
+            self.chatScreen.config(state='disabled')
+            return
+        
+        if self.connectBtn['text'] == 'Connect':
             #Send username to the server, 0 is the join command
             packType = '!Bh' + str(len(username)) + 's'
-            sock.send(struct.pack(packType, 0, len(username), username.encode('ASCII')))
-            
+            self.sock.send(struct.pack(packType, 0, len(username), username.encode('ASCII')))
+
             #Receive respond from server whether the name is taken or not
-            data = struct.unpack('!B', sock.recv(struct.calcsize('!B')))
+            data = struct.unpack('!B', self.sock.recv(struct.calcsize('!B')))
             if data[0] == 0:
-                break
+                self.usernameEntry.config(state='disabled')
+                self.connectBtn.config(bg='red', text='Disconnect')
+                self.outputThread.start()
+            elif data[0] == 1:
+                print("Your username was already taken")
+                self.chatScreen.config(state='normal')
+                self.chatScreen.insert('end', "Your username is already taken.\n")
+                self.chatScreen.config(state='disabled')
             
-            username = input('Username rejected, enter a new username: ')
+        elif self.connectBtn['text'] == 'Disconnect':
+            packType = '!Bh' + str(len(username)) + 's'
+            self.sock.send(struct.pack(packType, 1, len(username), username.encode('ASCII')))
+            self.usernameEntry.config(state='normal')
+            self.connectBtn.config(bg='green', text='Connect')
+            self.sock.close()
+            self.isConnect = False
+
+
+    def sendMessage(self):
+        #Get message from user and send it to server
+        messageToSend = ''
+        prtclNo = 2
+        isList = False
+        messageToSend = self.userInput.get('1.0', 'end')
+        #Set the type of message
+        temp = messageToSend.split()
+        if  messageToSend == "\n" : # if nothing was typed in the message box, do nothing
+            pass
+        if temp[0] == '@list':
+            prtclNo = 3
+            isList = True
+        elif temp[0][0] == '@':
+            prtclNo = 4
+        
+        if isList:
+            packType = '!B'
+            self.sock.send(struct.pack(packType, prtclNo))
+            self.userInput.delete('1.0', tk.END)
         else:
-            username = input('Username cannot be blank, enter a username: ')
-    
-    #Get user inputs
-    inputThread = threading.Thread(target=inputHandler, args=(sock, username))
-    inputThread.daemon = True
-    inputThread.start()
-    
-    #Get ouputs 
-    OutputThread = threading.Thread(target=outputHandler, args=(sock,))
-    OutputThread.daemon = True
-    OutputThread.start()
-    
-    inputThread.join()
-    OutputThread.join()    
-    
+            packType = '!Bh' + str(len(messageToSend)) + 's'
+            self.sock.send(struct.pack(packType, prtclNo, len(messageToSend), messageToSend.encode('ASCII')))
+            self.userInput.delete('1.0', tk.END)
+        
+
+    def updateChatScreen(self):
+        while True:
+            try:
+                if self.connectBtn['text'] == 'Disconnect':
+                    #Get message from server and print it out
+                    data = struct.unpack('!Bh', self.sock.recv(3))
+                    messageLen = data[1]
+                    messageType = '!' + str(messageLen) + 's'
+                    message = struct.unpack(messageType, self.sock.recv(struct.calcsize(messageType)))
+                    message = message[0].decode('ASCII')
+                    print(message)
+                    self.chatScreen.config(state='normal')
+                    self.chatScreen.insert('end', message)
+                    self.chatScreen.config(state='disabled')
+            except:
+                pass
+
+
+def main():
+    root = tk.Tk()
+    app = App(root)
     root.mainloop()
-    sock.close()
 
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

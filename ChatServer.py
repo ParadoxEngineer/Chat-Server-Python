@@ -47,15 +47,16 @@ def main():
                 sockets.append(conn)
             # If it is client socket, recv whatever message 
             else:    
-                data = struct.unpack('!Bh', sock.recv(3))
+                data = struct.unpack('!B', sock.recv(1))
                 print(data)  
-                messageLen = data[1]
-                messageType = '!' + str(messageLen) + 's'
-                message = struct.unpack(messageType, sock.recv(struct.calcsize(messageType)))
-                message = message[0].decode('ASCII')
                 
-                #Join
+                # Join
                 if data[0] == 0:
+                    messageLen = struct.unpack('!h', sock.recv(2))[0]
+                    messageType = '!' + str(messageLen) + 's'
+                    message = struct.unpack(messageType, sock.recv(messageLen))
+                    message = message[0].decode('ASCII')
+                    
                     joinMessage = '**' + message + ' is joining the chat**\n'
                     packType = '!Bh' + str(len(joinMessage)) + 's'
                     if len(usernames) == 0:
@@ -83,7 +84,7 @@ def main():
                             " Respond: Rejected-Name In Use" + "\n Local Time: " + time.asctime(time.localtime(time.time())))
                                           
                         
-                #Leaving
+                # Leave
                 if data[0] == 1:
                     for s in usernames:
                         if s[1].fileno() == sock.fileno():
@@ -103,6 +104,11 @@ def main():
                     
                 # Talk - Normal Message
                 if data[0] == 2:
+                    messageLen = struct.unpack('!h', sock.recv(2))[0]
+                    messageType = '!' + str(messageLen) + 's'
+                    message = struct.unpack(messageType, sock.recv(messageLen))
+                    message = message[0].decode('ASCII')
+
                     if message:
                         print(message)
                         # Find out who is sending the message
@@ -132,6 +138,11 @@ def main():
 
                 # Direct
                 if data[0] == 4:
+                    messageLen = struct.unpack('!h', sock.recv(2))[0]
+                    messageType = '!' + str(messageLen) + 's'
+                    message = struct.unpack(messageType, sock.recv(messageLen))
+                    message = message[0].decode('ASCII')
+                    
                     dm = ''
                     temp = message.split()
                     
