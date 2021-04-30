@@ -1,8 +1,7 @@
 # Chat-Server
 
-ChatServer.py is as its named.
-Ui.py is the mostly functioning client.
-ChatClient.py is curently depreciated.
+ChatClient.py opens a Gui for the client.
+ChatServer.py is a command line server.
 
 The Team
 
