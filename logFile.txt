@@ -1,0 +1,151 @@
+=>****Log Start****
+
+=>**He is joining the chat**
+ with ip: 127.0.0.1 and port: 9000 username requested: He Respond: Accepted
+ Local Time: Thu Apr 29 22:18:29 2021
+
+=>[He]Yep!
+  with ip: 127.0.0.1 and port: 9000
+ Local Time: Thu Apr 29 22:18:32 2021
+
+=>He asked for list with ip: 127.0.0.1 and port: 9000
+ Local Time: Thu Apr 29 22:18:36 2021
+
+=>[He Private]Hello?
+ to He with sender ip: 127.0.0.1 and port: 9000
+ Local Time: Thu Apr 29 22:18:42 2021
+
+=>**He is leaving the chat**
+ with ip: 127.0.0.1 and port: 9000
+ Local Time: Thu Apr 29 22:18:44 2021
+
+=>****Log Start****
+
+=>**H is joining the chat**
+ with ip: 127.0.0.1 and port: 9000 username requested: H Respond: Accepted
+ Local Time: Thu Apr 29 22:20:29 2021
+
+=>**J is joining the chat**
+ with ip: 127.0.0.1 and port: 9000 username requested: J Respond: Accepted
+ Local Time: Thu Apr 29 22:20:31 2021
+
+=>[J Private]Testing!
+ to H with sender ip: 127.0.0.1 and port: 9000
+ Local Time: Thu Apr 29 22:20:39 2021
+
+=>**J is leaving the chat**
+ with ip: 127.0.0.1 and port: 9000
+ Local Time: Thu Apr 29 22:20:40 2021
+
+=>**H is joining the chat**
+ with ip: 127.0.0.1 and port: 9000 username requested: H Respond: Rejected-Name In Use
+ Local Time: Thu Apr 29 22:20:42 2021
+
+=>**J is joining the chat**
+ with ip: 127.0.0.1 and port: 9000 username requested: J Respond: Accepted
+ Local Time: Thu Apr 29 22:20:45 2021
+
+=>[J]Hey
+  with ip: 127.0.0.1 and port: 9000
+ Local Time: Thu Apr 29 22:20:49 2021
+
+=>[H]KE
+  with ip: 127.0.0.1 and port: 9000
+ Local Time: Thu Apr 29 22:20:52 2021
+
+=>[H Private]yeah?
+ to J with sender ip: 127.0.0.1 and port: 9000
+ Local Time: Thu Apr 29 22:20:59 2021
+
+=>**H is leaving the chat**
+ with ip: 127.0.0.1 and port: 9000
+ Local Time: Thu Apr 29 22:21:02 2021
+
+=>**J is leaving the chat**
+ with ip: 127.0.0.1 and port: 9000
+ Local Time: Thu Apr 29 22:21:03 2021
+
+=>****Log Start****
+
+=>**JLK is joining the chat**
+ with ip: 127.0.0.1 and port: 9000 username requested: JLK Respond: Accepted
+ Local Time: Fri Apr 30 09:44:26 2021
+
+=>[JLK]jagoirhpg
+  with ip: 127.0.0.1 and port: 9000
+ Local Time: Fri Apr 30 09:44:33 2021
+
+=>**JLK is leaving the chat**
+ with ip: 127.0.0.1 and port: 9000
+ Local Time: Fri Apr 30 09:45:08 2021
+
+=>**IEJF is joining the chat**
+ with ip: 127.0.0.1 and port: 9000 username requested: IEJF Respond: Accepted
+ Local Time: Fri Apr 30 09:51:10 2021
+
+=>**IEJF is leaving the chat**
+ with ip: 127.0.0.1 and port: 9000
+ Local Time: Fri Apr 30 09:51:11 2021
+
+=>****Log Start****
+
+=>**sd is joining the chat**
+ with ip: 127.0.0.1 and port: 9000 username requested: sd Respond: Accepted
+ Local Time: Fri Apr 30 09:53:12 2021
+
+=>**sd is leaving the chat**
+ with ip: 127.0.0.1 and port: 9000
+ Local Time: Fri Apr 30 09:53:18 2021
+
+=>****Log Start****
+
+=>**HEy is joining the chat**
+ with ip: 127.0.0.1 and port: 9000 username requested: HEy Respond: Accepted
+ Local Time: Fri Apr 30 10:01:48 2021
+
+=>**HEy is leaving the chat**
+ with ip: 127.0.0.1 and port: 9000
+ Local Time: Fri Apr 30 10:02:08 2021
+
+=>****Log Start****
+
+=>****Log Start****
+
+=>****Log Start****
+
+=>**H is joining the chat**
+ with ip: 127.0.0.1 and port: 9000 username requested: H Respond: Accepted
+ Local Time: Fri Apr 30 10:05:59 2021
+
+=>**H is leaving the chat**
+ with ip: 127.0.0.1 and port: 9000
+ Local Time: Fri Apr 30 10:06:07 2021
+
+=>****Log Start****
+
+=>**H is joining the chat**
+ with ip: 127.0.0.1 and port: 9000 username requested: H Respond: Accepted
+ Local Time: Fri Apr 30 10:06:53 2021
+
+=>[H]HEL
+  with ip: 127.0.0.1 and port: 9000
+ Local Time: Fri Apr 30 10:07:01 2021
+
+=>H asked for list with ip: 127.0.0.1 and port: 9000
+ Local Time: Fri Apr 30 10:07:06 2021
+
+=>**Py2 is joining the chat**
+ with ip: 127.0.0.1 and port: 9000 username requested: Py2 Respond: Accepted
+ Local Time: Fri Apr 30 10:07:45 2021
+
+=>Py2 asked for list with ip: 127.0.0.1 and port: 9000
+ Local Time: Fri Apr 30 10:07:49 2021
+
+=>**H is leaving the chat**
+ with ip: 127.0.0.1 and port: 9000
+ Local Time: Fri Apr 30 10:08:00 2021
+
+=>**Py2 is leaving the chat**
+ with ip: 127.0.0.1 and port: 9000
+ Local Time: Fri Apr 30 10:08:02 2021
+

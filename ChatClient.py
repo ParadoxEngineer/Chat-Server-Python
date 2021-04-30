@@ -14,10 +14,10 @@ import tkinter as tk
 import time
 
 class App:
-    def __init__(self, master):
+    def __init__(self, master, ip):
         self.master = master
         self.master.title('Chat App')
-        self.IP = '127.0.0.1'
+        self.IP = ip
         self.PORT = 9000
         self.isConnect = False
         
@@ -62,6 +62,13 @@ class App:
             return
         
         if self.connectBtn['text'] == 'Connect':
+            #Check for whitespace
+            if (' ' in username):
+                self.chatScreen.config(state='normal')
+                self.chatScreen.insert('end', 'Username cannot contain a space\n')
+                self.chatScreen.config(state='disabled')
+                
+                return
             #Send username to the server, 0 is the join command
             packType = '!Bh' + str(len(username)) + 's'
             self.sock.send(struct.pack(packType, 0, len(username), username.encode('ASCII')))
@@ -132,8 +139,12 @@ class App:
 
 
 def main():
+    ip = '127.0.0.1'
+    if len(sys.argv) > 1:
+        ip = sys.argv[1]
+
     root = tk.Tk()
-    app = App(root)
+    app = App(root, ip)
     root.mainloop()
 
 if __name__ == '__main__':

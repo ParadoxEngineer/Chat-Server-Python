@@ -63,6 +63,9 @@ def main():
                         sock.send(struct.pack('!B', 0))
                         usernames.append((message, sock))
                         print(joinMessage)
+                        msg = "**We support these commands: join, leave, talk, list, direct**\n"
+                        type = "!Bh" +  str(len(msg)) + 's'
+                        sock.send(struct.pack(type, 2, len(msg), msg.encode('ASCII')))
                         reply.append(struct.pack(packType, 2, len(joinMessage), joinMessage.encode('ASCII')))
                         #logfile
                         log(joinMessage + " with ip: " + str(sock.getpeername()[0]) + " and port: " + str(9000) + " username requested: " + str(message) + 
@@ -73,6 +76,9 @@ def main():
                             sock.send(struct.pack('!B', 0))
                             usernames.append((message, sock)) 
                             print(joinMessage)
+                            msg = "**We support these commands: join, leave, talk, list, direct**\n"
+                            type = "!Bh" +  str(len(msg)) + 's'
+                            sock.send(struct.pack(type, 2, len(msg), msg.encode('ASCII')))
                             reply.append(struct.pack(packType, 2, len(joinMessage), joinMessage.encode('ASCII')))  
                             #logfile
                             log(joinMessage + " with ip: " + str(sock.getpeername()[0]) + " and port: " + str(9000) + " username requested: " + str(message) + 
