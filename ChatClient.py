@@ -1,9 +1,18 @@
-#############################
+############################################
 #
+# Authors: Jonathan Edwards, Cor Sawai,
+#          Jaydon Tipton, Richard Swanson
+# Course: Advanced Networks (COSC4653-01)
+# Assignment: Chat Client and Server
 # File name: ChatClient.py
+# Usage: python3 ChatClient.py <IP>
+#        Defaults to 127.0.0.1 if
+#        no ip is proveded.
+# Description: A chat client with GUI that
+#              has simple chat commands.
 # Notes: Python 3
 #
-#############################
+############################################
 
 import socket
 import struct
