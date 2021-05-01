@@ -1,9 +1,17 @@
-#############################
+############################################
 #
+# Authors: Jonathan Edwards, Cor Sawai,
+#          Jaydon Tipton, Richard Swanson
+# Course: Advanced Networks (COSC4653-01)
+# Assignment: Chat Client and Server
 # File name: ChatServer.py
+# Usage: python3 ChatServer.py
+# Description: A chat server providing basic
+#              chat and commands to multiple
+#              clients.
 # Notes: Python 3
 #
-#############################
+############################################
 
 import socket
 import threading
